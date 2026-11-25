@@ -121,7 +121,8 @@ public class tools {
         for (Entity ent : Entities) {
             if (ent instanceof Item) {
                 Item item = (Item) ent;
-                if (!Main.ClearItemWhiteList.contains(item.getItemStack().getType().name())) {
+                if (!isTooYoungToClear(item.getTicksLived(), Main.ClearItemMinAge)
+                        && !Main.ClearItemWhiteList.contains(item.getItemStack().getType().name())) {
                     if (!Main.BlockBlackList.contains(item.getItemStack().getType().name()) && Dustbin.addItem(item.getItemStack())) {
                         ++DustbinCount;
                     }
@@ -190,7 +191,8 @@ public class tools {
     public static void clearEntityItem(Entity ent) {
         if (ent instanceof Item) {
             Item item = (Item) ent;
-            if (!Main.ClearItemWhiteList.contains(item.getItemStack().getType().name())) {
+            if (!isTooYoungToClear(item.getTicksLived(), Main.ClearItemMinAge)
+                    && !Main.ClearItemWhiteList.contains(item.getItemStack().getType().name())) {
                 ent.remove();
             }
         } else if (ent instanceof ItemFrame && Main.ClearItemItemFrame) {
@@ -230,6 +232,10 @@ public class tools {
 
             return true;
         }
+    }
+
+    public static boolean isTooYoungToClear(int ticksLived, int minAgeSeconds) {
+        return minAgeSeconds > 0 && ticksLived < minAgeSeconds * 20L;
     }
 
     public static void TraversePlayer() {

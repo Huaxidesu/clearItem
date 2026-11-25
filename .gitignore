@@ -1,0 +1,4 @@
+# 构建与测试产物（target 下已跟踪的 class 与 jar 由上游约定保留，仅忽略测试输出）
+target/surefire-reports/
+target/test-classes/
+tmp-test-classes/

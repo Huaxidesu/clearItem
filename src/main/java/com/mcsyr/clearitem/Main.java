@@ -78,6 +78,8 @@ public class Main extends JavaPlugin {
 
   public static List<String> BlockBlackList;
   public static Integer ClearItemChunkMaxItems;
+
+  public static Integer ClearItemMinAge;
   
   public static Boolean ClearItemItemFrame;
   
@@ -199,6 +201,7 @@ public class Main extends JavaPlugin {
     DropMessageDiscardInOpen = Objects.requireNonNull(Config.getString("Drop.Message.DiscardInOpen")).replaceAll("&", "§");
     ClearItemTime = Config.getInt("ClearItem.Time");
     ClearItemChunkMaxItems = Config.getInt("ClearItem.ChunkMaxItems");
+    ClearItemMinAge = Config.isSet("ClearItem.MinAge") ? Config.getInt("ClearItem.MinAge") : 60;
     ClearItemWhiteList = Config.getStringList("ClearItem.WhiteList");
     ClearItemItemFrame = Config.getBoolean("ClearItem.ItemFrame");
     ClearItemBoat = Config.getBoolean("ClearItem.Boat");

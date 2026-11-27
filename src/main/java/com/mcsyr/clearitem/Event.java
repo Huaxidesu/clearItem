@@ -1,13 +1,8 @@
 package com.mcsyr.clearitem;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,33 +36,14 @@ public class Event implements Listener {
 
   }
 
+  /**
+   * 掉落事件只做一次常数开销的计数，不做实体扫描。
+   * 旧实现每次掉落都调用 getNearbyEntities 遍历周边实体，掉落物上万时本身就是卡服来源，
+   * 现改为交给 DenseDrop：达到阈值时才复核一次，并负责提醒与清理。
+   */
   @EventHandler
   public void onItemSpawn(ItemSpawnEvent event) {
-    List<Entity> Entities = event.getEntity().getNearbyEntities(16.0, 32.0, 16.0);
-      if (Entities.size() >= Main.ClearItemChunkMaxItems) {
-        List<LivingEntity> worldEntities = event.getEntity().getWorld().getLivingEntities();
-
-        for (Entity ent : Entities) {
-          tools.clearEntityItem(ent);
-        }
-
-        Player player = null;
-
-        for (LivingEntity worldEntity : worldEntities) {
-          if (worldEntity instanceof Player) {
-            player = (Player) worldEntity;
-            break;
-          }
-        }
-
-        String message = Main.ClearItemMessageClearChunkMaxItems.replace("%world%", "%multiverse_world_alias%");
-        message = PlaceholderAPI.setPlaceholders(player, message);
-        DecimalFormat df = new DecimalFormat("0.0 ");
-        message = message.replace("%X%", df.format(event.getLocation().getX())).replace("%Y%", df.format(event.getLocation().getY())).replace("%Z%", df.format(event.getLocation().getZ()));
-        Bukkit.getServer().broadcastMessage(message);
-      }
-
-
+    DenseDrop.onItemSpawn(event.getEntity());
   }
 
   @EventHandler(

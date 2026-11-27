@@ -155,6 +155,44 @@ ShareInv:
       "这是一个共享空间"
 
 
+# 密集掉落物检测
+# 按区块统计掉落物数量，达到阈值时向全服提醒，并给出「传送」与「清理」两个悬浮窗按钮
+# 两个按钮都只有管理员（权限 ClearItem.Op.Command.DenseDrop）可以执行，普通玩家点击只提示权限不足
+DenseDrop:
+  # 是否开启(true为开启，false为关闭)
+  Enable: true
+  # 单区块掉落物数量阈值，达到即提醒
+  # 注意：本值必须小于上面 ClearItem.ChunkMaxItems，否则区块会先被即时清理，提醒不会出现
+  Threshold: 1000
+  # 全量统计周期(秒)，用于校正掉落事件累加的计数
+  # 平时靠掉落事件累加计数（零开销），这里只是定时校正的兜底，不必设得很小
+  ScanInterval: 60
+  # 同一区块两次提醒的最小间隔(秒)，避免持续刷屏
+  AlertCooldown: 180
+  # 提醒中统计附近玩家的半径(格)
+  NearbyRadius: 32
+  # 提醒文案
+  # 可用占位符：%world% 世界 %X% %Y% %Z% 坐标 %count% 掉落物数量 %players% 附近玩家
+  Message:
+    Alert: "&4[警告] &b世界：%world% &e坐标：%X% %Y% %Z% &4附近掉落物达到 &e%count% &4件，附近玩家：&f%players%"
+    # 传送按钮的文字与提示
+    TpButton: " &b[&e点此传送&b]"
+    TpInfo: "传送到该位置(仅管理员)"
+    # 清理按钮的文字与提示
+    CleanButton: " &c[&e点此清理&c]"
+    CleanInfo: "清理该区块的掉落物并放进公共垃圾箱(仅管理员)"
+    # 普通玩家点击按钮时的提示
+    NoPermission: "&c权限不足，只有管理员可以执行该操作"
+    # 附近没有玩家时的占位文案
+    NoNearby: "无"
+    # 目标世界或坐标无效时的提示
+    BadTarget: "&c目标位置无效"
+    # 传送成功的提示
+    TpSuccess: "&a已传送到目标位置"
+    # 清理完成的提示
+    # 可用占位符：%world% 世界 %chunkX% %chunkZ% 区块坐标 %count% 清理数量 %dustbin% 放入垃圾箱数量
+    PurgeResult: "&b[清理] &f已清理 &e%world% &f区块 &e%chunkX%,%chunkZ% &f的 &e%count% &f件掉落物，其中 &e%dustbin% &f件放入公共垃圾箱"
+
 # 清理垃圾提示方式
 CleaningTips:
   # 是否开启分地图提示

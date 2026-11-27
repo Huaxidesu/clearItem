@@ -151,7 +151,42 @@ public class Main extends JavaPlugin {
 
   public static String ShareButtonInfo;
 
-  public static String Version = "3.3.0";
+  /** 密集掉落物检测：是否开启 */
+  public static Boolean DenseDropEnable = Boolean.TRUE;
+
+  /** 密集掉落物检测：单区块掉落物数量阈值 */
+  public static Integer DenseDropThreshold = 1000;
+
+  /** 密集掉落物检测：全量统计周期（秒） */
+  public static Integer DenseDropScanInterval = 60;
+
+  /** 密集掉落物检测：同一区块两次提醒的最小间隔（秒） */
+  public static Integer DenseDropAlertCooldown = 180;
+
+  /** 密集掉落物检测：提醒中统计附近玩家的半径（格） */
+  public static Integer DenseDropNearbyRadius = 32;
+
+  public static String DenseDropMessageAlert = "";
+
+  public static String DenseDropMessageTpButton = "";
+
+  public static String DenseDropMessageTpInfo = "";
+
+  public static String DenseDropMessageCleanButton = "";
+
+  public static String DenseDropMessageCleanInfo = "";
+
+  public static String DenseDropMessageNoPermission = "";
+
+  public static String DenseDropMessageNoNearby = "";
+
+  public static String DenseDropMessageBadTarget = "";
+
+  public static String DenseDropMessageTpSuccess = "";
+
+  public static String DenseDropMessagePurgeResult = "";
+
+  public static String Version = "3.4.0";
 
   public static List<String> Arg1_TabCommand= new ArrayList<>(Arrays.asList("open","share","discard","drop"));
 
@@ -168,6 +203,7 @@ public class Main extends JavaPlugin {
     Objects.requireNonNull(Bukkit.getPluginCommand("clearitem")).setTabCompleter(new command());
     loadConfig();
     tools.Scheduler();
+    DenseDrop.start();
     tools.TraversePlayer();
   }
 
@@ -232,6 +268,35 @@ public class Main extends JavaPlugin {
     ShareClearMessageEnd= Objects.requireNonNull(Config.getString("ShareInv.Message.ClearMessageEnd")).replaceAll("&", "§");
     ShareButtonMessage= Objects.requireNonNull(Config.getString("ShareInv.Message.ButtonMessage")).replaceAll("&", "§");
     ShareButtonInfo= Objects.requireNonNull(Config.getString("ShareInv.Message.ButtonInfo")).replaceAll("&", "§");
+    loadDenseDropConfig();
+  }
 
+  /**
+   * 读取密集掉落物检测的配置。
+   * 旧版配置文件没有这一段，全部键缺失时使用内置默认值，保证升级后可直接启动。
+   */
+  private static void loadDenseDropConfig() {
+    DenseDropEnable = !Config.isSet("DenseDrop.Enable") || Config.getBoolean("DenseDrop.Enable");
+    DenseDropThreshold = Config.isSet("DenseDrop.Threshold") ? Config.getInt("DenseDrop.Threshold") : 1000;
+    DenseDropScanInterval = Config.isSet("DenseDrop.ScanInterval") ? Config.getInt("DenseDrop.ScanInterval") : 60;
+    DenseDropAlertCooldown = Config.isSet("DenseDrop.AlertCooldown") ? Config.getInt("DenseDrop.AlertCooldown") : 180;
+    DenseDropNearbyRadius = Config.isSet("DenseDrop.NearbyRadius") ? Config.getInt("DenseDrop.NearbyRadius") : 32;
+    DenseDropMessageAlert = denseDropMessage("DenseDrop.Message.Alert",
+            "&4[警告] &b世界：%world% &e坐标：%X% %Y% %Z% &4附近掉落物达到 &e%count% &4件，附近玩家：&f%players%");
+    DenseDropMessageTpButton = denseDropMessage("DenseDrop.Message.TpButton", " &b[&e点此传送&b]");
+    DenseDropMessageTpInfo = denseDropMessage("DenseDrop.Message.TpInfo", "传送到该位置(仅管理员)");
+    DenseDropMessageCleanButton = denseDropMessage("DenseDrop.Message.CleanButton", " &c[&e点此清理&c]");
+    DenseDropMessageCleanInfo = denseDropMessage("DenseDrop.Message.CleanInfo", "清理该区块的掉落物并放进公共垃圾箱(仅管理员)");
+    DenseDropMessageNoPermission = denseDropMessage("DenseDrop.Message.NoPermission", "&c权限不足，只有管理员可以执行该操作");
+    DenseDropMessageNoNearby = denseDropMessage("DenseDrop.Message.NoNearby", "无");
+    DenseDropMessageBadTarget = denseDropMessage("DenseDrop.Message.BadTarget", "&c目标位置无效");
+    DenseDropMessageTpSuccess = denseDropMessage("DenseDrop.Message.TpSuccess", "&a已传送到目标位置");
+    DenseDropMessagePurgeResult = denseDropMessage("DenseDrop.Message.PurgeResult",
+            "&b[清理] &f已清理 &e%world% &f区块 &e%chunkX%,%chunkZ% &f的 &e%count% &f件掉落物，其中 &e%dustbin% &f件放入公共垃圾箱");
+  }
+
+  private static String denseDropMessage(String path, String fallback) {
+    String value = Config.isSet(path) ? Config.getString(path) : fallback;
+    return value == null ? "" : value.replaceAll("&", "§");
   }
 }

@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -85,6 +88,7 @@ public class command implements TabExecutor {
         if(player.hasPermission("ClearItem.Op.Command.reload")) {
           if (args[0].equalsIgnoreCase("reload")) {
             Main.loadConfig();
+            DenseDrop.start();
             sender.sendMessage("§b[ClearItem] §f插件重载成功!");
             return true;
           }
@@ -122,6 +126,10 @@ public class command implements TabExecutor {
             return true;
           }
         }
+      } else if (args.length == 5 && args[0].equalsIgnoreCase("tp")) {
+        return handleTeleport((Player) sender, args);
+      } else if (args.length == 4 && args[0].equalsIgnoreCase("purge")) {
+        return handlePurge((Player) sender, args);
       }else if(args.length==2){
         Player player = (Player)sender;
         if(player.hasPermission("ClearItem.Open")){
@@ -166,6 +174,75 @@ public class command implements TabExecutor {
   }
 
 
+  /**
+   * 传送指令：/citem tp &lt;世界&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;
+   * 只由密集掉落物提醒里的悬浮窗触发，需要管理员权限。
+   */
+  private boolean handleTeleport(Player player, String[] args) {
+    if (!player.hasPermission("ClearItem.Op.Command.DenseDrop")) {
+      player.sendMessage(Main.DenseDropMessageNoPermission);
+      return true;
+    }
+
+    World world = Bukkit.getWorld(args[1]);
+    if (world == null) {
+      player.sendMessage(Main.DenseDropMessageBadTarget);
+      return true;
+    }
+
+    Location target;
+    try {
+      target = new Location(world,
+              Double.parseDouble(args[2]),
+              Double.parseDouble(args[3]),
+              Double.parseDouble(args[4]));
+    } catch (NumberFormatException exception) {
+      player.sendMessage(Main.DenseDropMessageBadTarget);
+      return true;
+    }
+
+    player.teleport(target);
+    player.sendMessage(Main.DenseDropMessageTpSuccess);
+    return true;
+  }
+
+  /**
+   * 清理指令：/citem purge &lt;世界&gt; &lt;区块X&gt; &lt;区块Z&gt;
+   * 清理该区块的全部掉落物并放入公共垃圾箱，需要管理员权限。
+   */
+  private boolean handlePurge(Player player, String[] args) {
+    if (!player.hasPermission("ClearItem.Op.Command.DenseDrop")) {
+      player.sendMessage(Main.DenseDropMessageNoPermission);
+      return true;
+    }
+
+    World world = Bukkit.getWorld(args[1]);
+    if (world == null) {
+      player.sendMessage(Main.DenseDropMessageBadTarget);
+      return true;
+    }
+
+    int chunkX;
+    int chunkZ;
+    try {
+      chunkX = Integer.parseInt(args[2]);
+      chunkZ = Integer.parseInt(args[3]);
+    } catch (NumberFormatException exception) {
+      player.sendMessage(Main.DenseDropMessageBadTarget);
+      return true;
+    }
+
+    DenseDrop.Result result = DenseDrop.purge(world, chunkX, chunkZ, true, false);
+    String message = Main.DenseDropMessagePurgeResult
+            .replace("%count%", String.valueOf(result.removed))
+            .replace("%dustbin%", String.valueOf(result.dustbin))
+            .replace("%world%", tools.IncludeWorldAlias(world.getName()))
+            .replace("%chunkX%", String.valueOf(chunkX))
+            .replace("%chunkZ%", String.valueOf(chunkZ));
+    player.sendMessage(message);
+    return true;
+  }
+
   private void showHelp(CommandSender sender) {
     sender.sendMessage("§7======================" + Main.PublicDustbinName + "§7======================");
     sender.sendMessage("§7");
@@ -196,6 +273,9 @@ public class command implements TabExecutor {
       sender.sendMessage("§7");
       sender.sendMessage(Main.PublicDustbinName + " §f清空共享空间");
       sender.sendMessage(Main.PublicDustbinName + " §f§l/citem ShareClean | SClean");
+      sender.sendMessage("§7");
+      sender.sendMessage(Main.PublicDustbinName + " §f密集掉落物提醒里的传送与清理按钮");
+      sender.sendMessage(Main.PublicDustbinName + " §f§l需要权限 ClearItem.Op.Command.DenseDrop");
     }
 
     sender.sendMessage("§7======================§b" + Main.Version + "§7======================");

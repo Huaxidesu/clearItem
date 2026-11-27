@@ -157,8 +157,8 @@ public class Main extends JavaPlugin {
   /** 密集掉落物检测：单区块掉落物数量阈值 */
   public static Integer DenseDropThreshold = 1000;
 
-  /** 密集掉落物检测：全量统计周期（秒） */
-  public static Integer DenseDropScanInterval = 60;
+  /** 密集掉落物检测：清理时每 tick 处理的掉落物数量，分批执行避免卡顿 */
+  public static Integer DenseDropPurgeBatch = 500;
 
   /** 密集掉落物检测：同一区块两次提醒的最小间隔（秒） */
   public static Integer DenseDropAlertCooldown = 180;
@@ -186,11 +186,11 @@ public class Main extends JavaPlugin {
 
   public static String DenseDropMessagePurgeResult = "";
 
-  public static String Version = "3.4.0";
+  public static String Version = "3.4.1";
 
   public static List<String> Arg1_TabCommand= new ArrayList<>(Arrays.asList("open","share","discard","drop"));
 
-  public static List<String> Arg1_Op_TabCommand= new ArrayList<>(Arrays.asList("type","reload","PublicClear","PublicClean","ShareClean"));
+  public static List<String> Arg1_Op_TabCommand= new ArrayList<>(Arrays.asList("type","reload","PublicClear","PublicClean","ShareClean","dense"));
   public Main() {
   }
 
@@ -203,7 +203,6 @@ public class Main extends JavaPlugin {
     Objects.requireNonNull(Bukkit.getPluginCommand("clearitem")).setTabCompleter(new command());
     loadConfig();
     tools.Scheduler();
-    DenseDrop.start();
     tools.TraversePlayer();
   }
 
@@ -278,7 +277,7 @@ public class Main extends JavaPlugin {
   private static void loadDenseDropConfig() {
     DenseDropEnable = !Config.isSet("DenseDrop.Enable") || Config.getBoolean("DenseDrop.Enable");
     DenseDropThreshold = Config.isSet("DenseDrop.Threshold") ? Config.getInt("DenseDrop.Threshold") : 1000;
-    DenseDropScanInterval = Config.isSet("DenseDrop.ScanInterval") ? Config.getInt("DenseDrop.ScanInterval") : 60;
+    DenseDropPurgeBatch = Config.isSet("DenseDrop.PurgeBatch") ? Config.getInt("DenseDrop.PurgeBatch") : 500;
     DenseDropAlertCooldown = Config.isSet("DenseDrop.AlertCooldown") ? Config.getInt("DenseDrop.AlertCooldown") : 180;
     DenseDropNearbyRadius = Config.isSet("DenseDrop.NearbyRadius") ? Config.getInt("DenseDrop.NearbyRadius") : 32;
     DenseDropMessageAlert = denseDropMessage("DenseDrop.Message.Alert",

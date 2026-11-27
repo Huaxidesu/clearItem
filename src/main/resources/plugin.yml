@@ -1,7 +1,7 @@
 name: ClearItem
 main: com.mcsyr.clearitem.Main
 softdepend: [PlaceholderAPI]
-version: 3.4.0
+version: 3.4.1
 authors: [Luo_ma,KlNon]
 description: Clear Items in the world and share your items with your friends
 commands:

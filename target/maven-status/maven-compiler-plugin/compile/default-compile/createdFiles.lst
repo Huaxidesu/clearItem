@@ -1,8 +1,12 @@
+com\mcsyr\clearitem\DenseDrop.class
+com\mcsyr\clearitem\DenseDrop$ChunkStat.class
+com\mcsyr\clearitem\DenseDrop$PurgeCallback.class
+com\mcsyr\clearitem\Share.class
+com\mcsyr\clearitem\DenseDrop$PurgeJob.class
 com\mcsyr\clearitem\Dustbin.class
 com\mcsyr\clearitem\Event.class
 com\mcsyr\clearitem\command.class
-com\mcsyr\clearitem\DenseDrop.class
+com\mcsyr\clearitem\DenseDrop$1.class
 com\mcsyr\clearitem\DenseDrop$Result.class
 com\mcsyr\clearitem\Main.class
-com\mcsyr\clearitem\Share.class
 com\mcsyr\clearitem\tools.class

@@ -156,6 +156,8 @@ public class tools {
             }
         }
 
+        DenseDrop.forgetWorld(world.getName());
+
         Main.DustbinCount += DustbinCount;
         Main.WasteTotal = Main.WasteTotal + count;
         if (!Main.CleaningTipsEnable && count > 0) {

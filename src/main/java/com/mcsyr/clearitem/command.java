@@ -88,7 +88,6 @@ public class command implements TabExecutor {
         if(player.hasPermission("ClearItem.Op.Command.reload")) {
           if (args[0].equalsIgnoreCase("reload")) {
             Main.loadConfig();
-            DenseDrop.start();
             sender.sendMessage("§b[ClearItem] §f插件重载成功!");
             return true;
           }
@@ -123,6 +122,13 @@ public class command implements TabExecutor {
             sender.sendMessage("§b[ClearItem] §f共享空间清理中");
             tools.cleanShareInv();
             Dustbin.page();
+            return true;
+          }
+        }
+
+        if(player.hasPermission("ClearItem.Op.Command.DenseDrop")) {
+          if (args[0].equalsIgnoreCase("dense")) {
+            sender.sendMessage(DenseDrop.report());
             return true;
           }
         }
@@ -232,14 +238,19 @@ public class command implements TabExecutor {
       return true;
     }
 
-    DenseDrop.Result result = DenseDrop.purge(world, chunkX, chunkZ, true, false);
-    String message = Main.DenseDropMessagePurgeResult
-            .replace("%count%", String.valueOf(result.removed))
-            .replace("%dustbin%", String.valueOf(result.dustbin))
-            .replace("%world%", tools.IncludeWorldAlias(world.getName()))
-            .replace("%chunkX%", String.valueOf(chunkX))
-            .replace("%chunkZ%", String.valueOf(chunkZ));
-    player.sendMessage(message);
+    final World target = world;
+    final int targetX = chunkX;
+    final int targetZ = chunkZ;
+    player.sendMessage("§b[ClearItem] §f正在清理该区块的掉落物...");
+    DenseDrop.purgeAsync(target, targetX, targetZ, true, false, result -> {
+      String message = Main.DenseDropMessagePurgeResult
+              .replace("%count%", String.valueOf(result.removed))
+              .replace("%dustbin%", String.valueOf(result.dustbin))
+              .replace("%world%", tools.IncludeWorldAlias(target.getName()))
+              .replace("%chunkX%", String.valueOf(targetX))
+              .replace("%chunkZ%", String.valueOf(targetZ));
+      player.sendMessage(message);
+    });
     return true;
   }
 
@@ -273,6 +284,9 @@ public class command implements TabExecutor {
       sender.sendMessage("§7");
       sender.sendMessage(Main.PublicDustbinName + " §f清空共享空间");
       sender.sendMessage(Main.PublicDustbinName + " §f§l/citem ShareClean | SClean");
+      sender.sendMessage("§7");
+      sender.sendMessage(Main.PublicDustbinName + " §f查看各区块掉落物计数");
+      sender.sendMessage(Main.PublicDustbinName + " §f§l/citem dense");
       sender.sendMessage("§7");
       sender.sendMessage(Main.PublicDustbinName + " §f密集掉落物提醒里的传送与清理按钮");
       sender.sendMessage(Main.PublicDustbinName + " §f§l需要权限 ClearItem.Op.Command.DenseDrop");

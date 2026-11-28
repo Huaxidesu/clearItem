@@ -334,15 +334,13 @@ public class DenseDrop {
             return;
         }
 
-        if (sample == null) {
-            return;
-        }
         String key = chunkKey(world.getName(), chunkX, chunkZ);
         long now = System.currentTimeMillis();
 
         // 即时清理是硬性行为，不受提醒冷却影响；沿用旧语义：保护未满最短存活时间的物品，不放进垃圾箱
         if (nz(Main.ClearItemChunkMaxItems) > 0 && count >= nz(Main.ClearItemChunkMaxItems)) {
             LastAlert.put(key, now);
+            log("区块掉落物达到即时清理阈值 " + count + " 件，位置 " + describe(world, sample));
             purgeAsync(world, chunkX, chunkZ, false, true, null);
             broadcastChunkMaxItems(world, sample, count);
             return;
@@ -357,6 +355,7 @@ public class DenseDrop {
             return;
         }
         LastAlert.put(key, now);
+        log("区块掉落物达到提醒阈值 " + count + " 件，位置 " + describe(world, sample));
         alert(world, chunkX, chunkZ, count, sample);
     }
 
@@ -484,6 +483,22 @@ public class DenseDrop {
         Counts.keySet().removeIf(key -> key.startsWith(prefix));
         LastVerified.keySet().removeIf(key -> key.startsWith(prefix));
         Samples.keySet().removeIf(key -> key.startsWith(prefix));
+    }
+
+    /** 写一条审计日志，控制台消息不会落进 latest.log，排查时以日志为准 */
+    private static void log(String message) {
+        if (Main.plugin != null) {
+            Main.plugin.getLogger().info("[密集掉落物] " + message);
+        }
+    }
+
+    /** 世界名与坐标的简短描述 */
+    private static String describe(World world, Location location) {
+        if (world == null || location == null) {
+            return "未知";
+        }
+        return world.getName() + " " + format(location.getX()) + " "
+                + format(location.getY()) + " " + format(location.getZ());
     }
 
     private static int nz(Integer value) {

@@ -180,7 +180,7 @@ DenseDrop:
     TpInfo: "传送到该位置(仅管理员)"
     # 清理按钮的文字与提示
     CleanButton: " &c[&e点此清理&c]"
-    CleanInfo: "清理该区块的掉落物并放进公共垃圾箱(仅管理员)"
+    CleanInfo: "让肥猫吃掉该区块的掉落物并放进大胃袋(仅管理员)"
     # 普通玩家点击按钮时的提示
     NoPermission: "&c权限不足，只有管理员可以执行该操作"
     # 附近没有玩家时的占位文案
@@ -191,7 +191,7 @@ DenseDrop:
     TpSuccess: "&a已传送到目标位置"
     # 清理完成的提示
     # 可用占位符：%world% 世界 %chunkX% %chunkZ% 区块坐标 %count% 清理数量 %dustbin% 放入垃圾箱数量
-    PurgeResult: "&b[清理] &f已清理 &e%world% &f区块 &e%chunkX%,%chunkZ% &f的 &e%count% &f件掉落物，其中 &e%dustbin% &f件放入公共垃圾箱"
+    PurgeResult: "&b[清理] &f已清理 &e%world% &f区块 &e%chunkX%,%chunkZ% &f的 &e%count% &f件掉落物，其中 &e%dustbin% &f件放进了肥猫的大胃袋"
 
 # 清理垃圾提示方式
 CleaningTips:

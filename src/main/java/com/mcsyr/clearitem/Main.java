@@ -285,13 +285,13 @@ public class Main extends JavaPlugin {
     DenseDropMessageTpButton = denseDropMessage("DenseDrop.Message.TpButton", " &b[&e点此传送&b]");
     DenseDropMessageTpInfo = denseDropMessage("DenseDrop.Message.TpInfo", "传送到该位置(仅管理员)");
     DenseDropMessageCleanButton = denseDropMessage("DenseDrop.Message.CleanButton", " &c[&e点此清理&c]");
-    DenseDropMessageCleanInfo = denseDropMessage("DenseDrop.Message.CleanInfo", "清理该区块的掉落物并放进公共垃圾箱(仅管理员)");
+    DenseDropMessageCleanInfo = denseDropMessage("DenseDrop.Message.CleanInfo", "让肥猫吃掉该区块的掉落物并放进大胃袋(仅管理员)");
     DenseDropMessageNoPermission = denseDropMessage("DenseDrop.Message.NoPermission", "&c权限不足，只有管理员可以执行该操作");
     DenseDropMessageNoNearby = denseDropMessage("DenseDrop.Message.NoNearby", "无");
     DenseDropMessageBadTarget = denseDropMessage("DenseDrop.Message.BadTarget", "&c目标位置无效");
     DenseDropMessageTpSuccess = denseDropMessage("DenseDrop.Message.TpSuccess", "&a已传送到目标位置");
     DenseDropMessagePurgeResult = denseDropMessage("DenseDrop.Message.PurgeResult",
-            "&b[清理] &f已清理 &e%world% &f区块 &e%chunkX%,%chunkZ% &f的 &e%count% &f件掉落物，其中 &e%dustbin% &f件放入公共垃圾箱");
+            "&b[清理] &f已清理 &e%world% &f区块 &e%chunkX%,%chunkZ% &f的 &e%count% &f件掉落物，其中 &e%dustbin% &f件放进了肥猫的大胃袋");
   }
 
   private static String denseDropMessage(String path, String fallback) {
